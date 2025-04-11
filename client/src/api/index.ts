@@ -20,9 +20,14 @@ export const logout = async () => {
 
 // Spin API
 export const getSpinOptions = async () => {
+  console.log("🔄 Fetching spin options..."); // <— add this
   const res = await fetch(`${API_URL}/api/spin/options`, {
-    credentials: 'include', // ← THIS enables cookies to go to Render
+    credentials: 'include',
   });
+  if (!res.ok) throw new Error('Failed to get spin options');
+  return res.json();
+};
+
   if (!res.ok) throw new Error('Failed to get spin options');
   return res.json();
 };
