@@ -20,10 +20,13 @@ export const logout = async () => {
 
 // Spin API
 export const getSpinOptions = async () => {
-  const res = await fetch(`${API_URL}/api/spin/options`);
+  const res = await fetch(`${API_URL}/api/spin/options`, {
+    credentials: 'include', // 👈 allows cookies/session to persist
+  });
   if (!res.ok) throw new Error('Failed to get spin options');
   return res.json();
 };
+
 
 export const performSpin = async (type: 'position' | 'event' | 'ovr' | 'all') => {
   const res = await apiRequest('POST', `${API_URL}/api/spin`, { type });
