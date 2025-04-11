@@ -49,49 +49,53 @@ export function useSpin() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Get spin options (positions, events, OVR ranges)
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const { data: spinOptions, isLoading: isLoadingOptions } = useQuery({
     queryKey: ['/api/spin/options'],
     queryFn: async () => {
-      const res = await fetch('/api/spin/options');
+      const res = await fetch(`${apiUrl}/api/spin/options`, {
+        credentials: 'include',
+      });
       if (!res.ok) throw new Error('Failed to fetch spin options');
       return res.json() as Promise<SpinOptions>;
     },
   });
 
-  // Get recent spins
   const { data: recentSpins, isLoading: isLoadingRecent } = useQuery({
     queryKey: ['/api/spin/recent'],
     queryFn: async () => {
-      const res = await fetch('/api/spin/recent');
+      const res = await fetch(`${apiUrl}/api/spin/recent`, {
+        credentials: 'include',
+      });
       if (!res.ok) throw new Error('Failed to fetch recent spins');
       const data = await res.json();
       return data.recentSpins as RecentSpin[];
     },
   });
 
-  // Get user's player collection
   const { data: userPlayers, isLoading: isLoadingPlayers } = useQuery({
     queryKey: ['/api/players'],
     queryFn: async () => {
-      const res = await fetch('/api/players');
+      const res = await fetch(`${apiUrl}/api/players`, {
+        credentials: 'include',
+      });
       if (!res.ok) throw new Error('Failed to fetch player collection');
       const data = await res.json();
       return data.players as Player[];
     },
   });
 
-  // Spin mutation
   const spinMutation = useMutation({
     mutationFn: async (type: 'position' | 'event' | 'ovr' | 'all') => {
       setSpinningType(type);
-      const res = await apiRequest('POST', '/api/spin', { type });
+      const res = await apiRequest('POST', `${apiUrl}/api/spin`, { type });
       return res.json() as Promise<SpinResult>;
     },
     onSuccess: (data) => {
       setSpinResult(data);
       queryClient.invalidateQueries({ queryKey: ['/api/spin/recent'] });
-      
+
       if (data.player) {
         queryClient.invalidateQueries({ queryKey: ['/api/players'] });
         toast({
@@ -112,12 +116,10 @@ export function useSpin() {
     },
   });
 
-  // Perform a spin
   const spin = (type: 'position' | 'event' | 'ovr' | 'all') => {
     spinMutation.mutate(type);
   };
 
-  // Reset the spin result
   const resetSpinResult = () => {
     setSpinResult(null);
   };
