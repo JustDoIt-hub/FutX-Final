@@ -3,6 +3,11 @@
   command = "npm run build"
 
 [[redirects]]
+  from = "/api/*"
+  to = "https://futx-api.onrender.com"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
