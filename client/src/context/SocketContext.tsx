@@ -45,11 +45,14 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
       socketRef.current.close();
     }
 
-    const wsUrl =
-      import.meta.env.VITE_WS_URL || 'ws://localhost:5000/ws';
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
-    console.log('Connecting to WebSocket at:', wsUrl);
-    const ws = new WebSocket(wsUrl);
+// Use .env value in production, fallback to localhost in development
+const wsHost = import.meta.env.VITE_WS_URL || `${protocol}://localhost:5000/ws`;
+
+console.log('🌐 Connecting to WebSocket at:', wsHost);
+const ws = new WebSocket(wsHost);
+
 
     ws.onopen = () => {
       console.log('✅ WebSocket connected');
