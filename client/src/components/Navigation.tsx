@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { FaSync, FaLayerGroup, FaGamepad, FaStore, FaTrophy } from "react-icons/fa";
+import { FaSync, FaLayerGroup, FaGamepad, FaStore, FaTrophy, FaUsers } from "react-icons/fa";
 
 interface NavigationProps {
   activeTab: string;
@@ -73,6 +73,18 @@ const Navigation = ({ activeTab }: NavigationProps) => {
           >
             <FaStore className="inline-block mr-2" /> SHOP
           </div>
+
+          <div
+            className={cn(
+              "tab-item flex-shrink-0 px-5 py-3 font-bold border-b-2 transition-colors cursor-pointer",
+              activeTab === "draft" 
+                ? "text-yellow-400 border-yellow-400" 
+                : "text-gray-400 border-transparent hover:text-white hover:border-gray-400"
+            )}
+            onClick={() => setLocation("/draft")}
+          >
+            <FaUsers className="inline-block mr-2" /> DRAFT
+          </div>
         </nav>
       </div>
     </div>
@@ -80,3 +92,4 @@ const Navigation = ({ activeTab }: NavigationProps) => {
 };
 
 export default Navigation;
+
