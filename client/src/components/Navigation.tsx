@@ -92,4 +92,3 @@ const Navigation = ({ activeTab }: NavigationProps) => {
 };
 
 export default Navigation;
-
