@@ -1,7 +1,8 @@
 [build]
-  publish = "dist/public"
+  publish = "dist"
+  command = "npm run build"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/api/*"
+  to = "https://your-render-api.onrender.com/api/:splat"
   status = 200
