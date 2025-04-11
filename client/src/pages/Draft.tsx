@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import DraftSquad from '@/components/DraftSquad';
@@ -36,11 +35,16 @@ export default function Draft() {
     }
   };
 
+  useEffect(() => {
+    generateNewPicks();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-900">
       <Navigation activeTab="draft" />
       
       <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold text-white mb-4">Draft Mode</h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>
             <h2 className="text-2xl font-bold text-white mb-4">Draft Squad</h2>
