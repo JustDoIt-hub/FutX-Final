@@ -28,6 +28,7 @@ const Spin = () => {
   const [localPositionResult, setLocalPositionResult] = useState<string | null>(null);
   const [localEventResult, setLocalEventResult] = useState<string | null>(null);
   const [localOvrResult, setLocalOvrResult] = useState<string | null>(null);
+  console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
   // Update the local state based on spinResult
   useEffect(() => {
