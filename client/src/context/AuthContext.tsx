@@ -1,5 +1,7 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useState, ReactNode, useEffect } from 'react';
+import { useLocation } from "wouter"; // to redirect
 
+// Simplified user interface
 interface User {
   id: number;
   username: string;
@@ -9,15 +11,15 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (user: User) => void;
   logout: () => void;
+  setUser: (user: User) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
-  login: () => {},
   logout: () => {},
+  setUser: () => {},
 });
 
 interface AuthProviderProps {
@@ -26,45 +28,36 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const [location, setLocation] = useLocation();
 
-  // Check if already authenticated when app loads
+  const logout = () => {
+    setUser(null);
+    setLocation("/login"); // redirect to login page
+  };
+
   useEffect(() => {
-    fetch("/api/auth/me", {
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Not authenticated");
-        return res.json();
-      })
-      .then((data) => {
-        setUser(data.user);
-      })
-      .catch(() => {
-        setUser(null);
-      });
+    // optional: load user from localStorage/sessionStorage if you want persistence
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
-  // Login manually after successful telegram login
-  const login = (user: User) => {
-    setUser(user);
-  };
-
-  // Logout
-  const logout = async () => {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-    setUser(null);
-  };
+  useEffect(() => {
+    if (user) {
+      sessionStorage.setItem("user", JSON.stringify(user));
+    } else {
+      sessionStorage.removeItem("user");
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
         isAuthenticated: !!user,
-        login,
         logout,
+        setUser,
       }}
     >
       {children}
