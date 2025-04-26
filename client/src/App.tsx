@@ -13,6 +13,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useTelegram } from "@/hooks/useTelegram";
 import Draft from "@/pages/Draft";
+import LoginPage from "@/pages/Login"; // 🆕 import your login page
 
 // Placeholder Shop page
 const Shop = () => (
@@ -49,6 +50,7 @@ function Router() {
           <Route path="/tournaments" component={Tournaments} />
           <Route path="/tournaments/create" component={TournamentCreate} />
           <Route path="/tournaments/:id" component={TournamentDetails} />
+          <Route path="/login" component={LoginPage} /> {/* 🆕 added /login */}
           <Route component={NotFound} />
         </Switch>
       </main>
