@@ -1,6 +1,5 @@
-import { createContext, useState, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode } from "react";
 
-// Simplified user interface
 interface User {
   id: number;
   username: string;
@@ -8,21 +7,16 @@ interface User {
 }
 
 interface AuthContextType {
-  user: User;
+  user: User | null;
   isAuthenticated: boolean;
+  login: (user: User) => void;
   logout: () => void;
 }
 
-// Default guest user - always authenticated
-const DEFAULT_USER: User = {
-  id: 1,
-  username: 'guest',
-  coins: 10000
-};
-
 export const AuthContext = createContext<AuthContextType>({
-  user: DEFAULT_USER,
-  isAuthenticated: true,
+  user: null,
+  isAuthenticated: false,
+  login: () => {},
   logout: () => {},
 });
 
@@ -31,18 +25,46 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  // Always use the default user, no auth needed
-  const [user] = useState<User>(DEFAULT_USER);
+  const [user, setUser] = useState<User | null>(null);
 
-  // Empty logout function - no-op since we're always authenticated
-  const logout = () => {};
+  // Check if already authenticated when app loads
+  useEffect(() => {
+    fetch("/api/auth/me", {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Not authenticated");
+        return res.json();
+      })
+      .then((data) => {
+        setUser(data.user);
+      })
+      .catch(() => {
+        setUser(null);
+      });
+  }, []);
+
+  // Login manually after successful telegram login
+  const login = (user: User) => {
+    setUser(user);
+  };
+
+  // Logout
+  const logout = async () => {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    setUser(null);
+  };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: true,
-        logout
+        isAuthenticated: !!user,
+        login,
+        logout,
       }}
     >
       {children}
