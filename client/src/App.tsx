@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import { Switch, Route } from "wouter";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthContext"; // your AuthContext
+import { Switch, Route, Redirect } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import Home from "@/pages/Home";
 import Spin from "@/pages/Spin";
@@ -13,9 +14,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useTelegram } from "@/hooks/useTelegram";
 import Draft from "@/pages/Draft";
-import LoginPage from "@/pages/Login"; // 🆕 import your login page
+import LoginPage from "@/pages/Login";
 
-// Placeholder Shop page
+// Shop page
 const Shop = () => (
   <div className="container mx-auto px-4 py-8">
     <h1 className="text-3xl font-bold text-white mb-6">FUT Shop</h1>
@@ -27,37 +28,58 @@ const Shop = () => (
 
 function Router() {
   const { tg, user, theme } = useTelegram();
+  const { isAuthenticated, loading } = useContext(AuthContext);
 
   useEffect(() => {
     if (tg) {
       tg.ready();
       tg.expand();
-      document.body.style.backgroundColor = theme?.bg_color || "#111827"; // fallback to Tailwind's gray-900
+      document.body.style.backgroundColor = theme?.bg_color || "#111827";
     }
   }, [tg, theme]);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-white text-2xl">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-900">
-      <Header />
+      {isAuthenticated && <Header />}
       <main className="flex-grow">
         <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/spin" component={Spin} />
-          <Route path="/draft" component={Draft} />
-          <Route path="/team-battle" component={TeamBattle} />
-          <Route path="/collection" component={Collection} />
-          <Route path="/shop" component={Shop} />
-          <Route path="/tournaments" component={Tournaments} />
-          <Route path="/tournaments/create" component={TournamentCreate} />
-          <Route path="/tournaments/:id" component={TournamentDetails} />
-          <Route path="/login" component={LoginPage} /> {/* 🆕 added /login */}
+          <Route path="/login" component={LoginPage} />
+          {/* 👇 protected routes */}
+          <ProtectedRoute path="/" component={Home} />
+          <ProtectedRoute path="/spin" component={Spin} />
+          <ProtectedRoute path="/draft" component={Draft} />
+          <ProtectedRoute path="/team-battle" component={TeamBattle} />
+          <ProtectedRoute path="/collection" component={Collection} />
+          <ProtectedRoute path="/shop" component={Shop} />
+          <ProtectedRoute path="/tournaments" component={Tournaments} />
+          <ProtectedRoute path="/tournaments/create" component={TournamentCreate} />
+          <ProtectedRoute path="/tournaments/:id" component={TournamentDetails} />
           <Route component={NotFound} />
         </Switch>
       </main>
-      <Footer />
+      {isAuthenticated && <Footer />}
       <Toaster />
     </div>
   );
+}
+
+// 👇 helper ProtectedRoute
+function ProtectedRoute({ component: Component, path }: { component: any, path: string }) {
+  const { isAuthenticated } = useContext(AuthContext);
+
+  if (!isAuthenticated) {
+    return <Redirect to="/login" />;
+  }
+
+  return <Route path={path} component={Component} />;
 }
 
 function App() {
