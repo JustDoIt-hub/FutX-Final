@@ -1,13 +1,23 @@
-import LoginWithTelegramButton from "../components/LoginWithTelegramButton";
+import { useEffect } from "react";
 
-export default function LoginPage() {
+const LoginPage = () => {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://telegram.org/js/telegram-widget.js?22";
+    script.async = true;
+    script.setAttribute("data-telegram-login", "futdraftrobot"); // <-- Replace with your bot username (without @)
+    script.setAttribute("data-size", "large");
+    script.setAttribute("data-userpic", "false");
+    script.setAttribute("data-request-access", "write");
+    script.setAttribute("data-auth-url", `${import.meta.env.VITE_API_URL}/api/auth/telegram`); // Your backend auth URL
+    document.getElementById("telegram-login-button")?.appendChild(script);
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6">Login with Telegram</h1>
-      <LoginWithTelegramButton onAuth={(userData) => {
-        console.log("Telegram Auth Data:", userData);
-        // Here you could automatically log them in or redirect them
-      }} />
+    <div className="flex items-center justify-center h-screen bg-gray-900">
+      <div id="telegram-login-button"></div>
     </div>
   );
-}
+};
+
+export default LoginPage;
