@@ -49,7 +49,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // if not in session storage, try to fetch user
       const fetchUser = async () => {
         try {
-          const res = await api.get("/auth/me"); // calling your backend
+          const res = await api.getCurrentUser();
+ // calling your backend
           if (res?.data) {
             setUser(res.data);
             sessionStorage.setItem("user", JSON.stringify(res.data));
