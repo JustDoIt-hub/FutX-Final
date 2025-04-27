@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useEffect } from "react";
+
 import { useQuery } from '@tanstack/react-query';
 import { useSpin, Player } from '@/hooks/useSpin';
 import Navigation from '@/components/Navigation';
