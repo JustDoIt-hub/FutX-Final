@@ -9,7 +9,7 @@ const LoginPage = () => {
     script.setAttribute("data-size", "large");
     script.setAttribute("data-userpic", "false");
     script.setAttribute("data-request-access", "write");
-    script.setAttribute("data-auth-url", `${import.meta.env.VITE_API_URL}/api/auth/login`); // Your backend auth URL
+    script.setAttribute("data-auth-url", `${import.meta.env.VITE_API_URL}/api/auth/telegram`); // Your backend auth URL
     document.getElementById("telegram-login-button")?.appendChild(script);
   }, []);
 
