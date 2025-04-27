@@ -1,6 +1,6 @@
 import { createContext, useState, ReactNode, useEffect } from "react";
 import { useLocation } from "wouter"; // for redirection
-import api from "../utils/api"; // import your API
+import api from "../api"; // import your API
 
 interface User {
   id: number;
