@@ -1,4 +1,6 @@
 import { useContext } from "react";
+import { useEffect } from "react";
+
 import { AuthContext } from "@/context/AuthContext"; // your AuthContext
 import { Switch, Route, Redirect } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
