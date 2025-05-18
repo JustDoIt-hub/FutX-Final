@@ -1,79 +1,36 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useState, useEffect } from "react";
+import { getCurrentUser } from "@/api"; // or wherever it is
 import { useLocation } from "wouter";
-import { login as apiLogin, logout as apiLogout } from "../api";
 
-interface User {
-  id: number;
-  username: string;
-  coins: number;
-}
-
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  login: (userId: number) => Promise<void>;
-  logout: () => void;
-  setUser: (user: User) => void;
-  loading: boolean;
-}
-
-export const AuthContext = createContext<AuthContextType>({
+export const AuthContext = createContext({
   user: null,
   isAuthenticated: false,
-  login: async () => {},
-  logout: () => {},
-  setUser: () => {},
-  loading: true,
+  setUser: (_user: any) => {},
 });
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState(null);
   const [, setLocation] = useLocation();
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Login function
-  const login = async (userId: number) => {
-    try {
-      const loggedInUser = await apiLogin(userId); // returns user
-      setUser(loggedInUser);
-      sessionStorage.setItem("user", JSON.stringify(loggedInUser));
-      setLocation("/");
-    } catch (err) {
-      console.error("Login failed:", err);
-    }
-  };
-
-  const logout = () => {
-    apiLogout().catch(console.error);
-    setUser(null);
-    sessionStorage.removeItem("user");
-    setLocation("/login");
-  };
-
-  // ✅ On mount, read from sessionStorage
   useEffect(() => {
-    const stored = sessionStorage.getItem("user");
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
-    setLoading(false);
+    (async () => {
+      try {
+        const data = await getCurrentUser(); // calls /api/auth/me
+        setUser(data.user);
+      } catch (err) {
+        console.log("User not authenticated.");
+        sessionStorage.removeItem("user");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
+  if (loading) return <div className="text-white p-8">Loading...</div>;
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        login,
-        logout,
-        setUser,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
