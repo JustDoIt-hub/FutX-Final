@@ -1,37 +1,18 @@
-// import { useEffect } from "react";
-
-// const LoginPage = () => {
-//   useEffect(() => {
-//     const script = document.createElement("script");
-//     script.src = "https://telegram.org/js/telegram-widget.js?22";
-//     script.async = true;
-//     script.setAttribute("data-telegram-login", "futdraftrobot"); // <-- Replace with your bot username (without @)
-//     script.setAttribute("data-size", "large");
-//     script.setAttribute("data-userpic", "false");
-//     script.setAttribute("data-request-access", "write");
-//     script.setAttribute("data-auth-url", `${import.meta.env.VITE_API_URL}/api/auth/telegram`); // Your backend auth URL
-//     document.getElementById("telegram-login-button")?.appendChild(script);
-//   }, []);
-
-//   return (
-//     <div className="flex items-center justify-center h-screen bg-gray-900">
-//       <div id="telegram-login-button"></div>
-//     </div>
-//   );
-// };
-
-// export default LoginPage;
-
-
-
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "@/context/AuthContext";
 import { useLocation } from "wouter";
 
 const LoginPage = () => {
   const [userId, setUserId] = useState("");
-  const { setUser } = useContext(AuthContext);
+  const { isAuthenticated, setUser } = useContext(AuthContext);
   const [, setLocation] = useLocation();
+
+  // ✅ If already authenticated, redirect to home
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation("/");
+    }
+  }, [isAuthenticated]);
 
   const handleLogin = async () => {
     if (!userId.trim()) {
@@ -48,10 +29,9 @@ const LoginPage = () => {
       const data = await res.json();
 
       if (data.user) {
-        // ✅ Update context and sessionStorage
         setUser(data.user);
         sessionStorage.setItem("user", JSON.stringify(data.user));
-        setLocation("/"); // ✅ redirect after login
+        setLocation("/");
       } else {
         alert(data.message || "Login failed");
       }
@@ -82,4 +62,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
