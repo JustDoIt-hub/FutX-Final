@@ -1,86 +1,58 @@
-import { createContext, useState, ReactNode, useEffect } from "react";
-import { useLocation } from "wouter"; // for redirection
-import * as api from "../api";
-import { useEffect } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
+import { useLocation } from "wouter";
 
-// import your API
-
-interface User {
-  id: number;
-  username: string;
-  coins: number;
-}
-
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  logout: () => void;
-  setUser: (user: User) => void;
-  loading: boolean;
-}
-
-export const AuthContext = createContext<AuthContextType>({
-  user: null,
-  isAuthenticated: false,
-  logout: () => {},
-  setUser: () => {},
-  loading: true,
-});
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+const LoginPage = () => {
+  const [userId, setUserId] = useState("");
+  const { setUser } = useContext(AuthContext);
   const [, setLocation] = useLocation();
 
-  const logout = () => {
-    setUser(null);
-    sessionStorage.removeItem("user");
-    setLocation("/login");
+  const handleLogin = async () => {
+    if (!userId.trim()) {
+      alert("Please enter a valid User ID");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login?userId=${userId}`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data.user) {
+        // ✅ Update context and sessionStorage
+        setUser(data.user);
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+        setLocation("/"); // ✅ redirect after login
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("An error occurred during login");
+    }
   };
 
-  useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setLoading(false);
-    } else {
-      // if not in session storage, try to fetch user
-      const fetchUser = async () => {
-        try {
-          const res = await api.getCurrentUser();
- // calling your backend
-          if (res?.data) {
-            setUser(res.data);
-            sessionStorage.setItem("user", JSON.stringify(res.data));
-          } else {
-            console.error("No user data received.");
-          }
-        } catch (error) {
-          console.error("Error fetching user:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchUser();
-    }
-  }, []);
-
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        logout,
-        setUser,
-        loading,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white space-y-4">
+      <h1 className="text-2xl font-semibold">Login</h1>
+      <input
+        type="text"
+        placeholder="Enter your User ID"
+        value={userId}
+        onChange={(e) => setUserId(e.target.value)}
+        className="p-2 rounded text-black"
+      />
+      <button
+        onClick={handleLogin}
+        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
+      >
+        Login
+      </button>
+    </div>
   );
 };
+
+export default LoginPage;
