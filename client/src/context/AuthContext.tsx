@@ -1,9 +1,6 @@
 import { createContext, useState, ReactNode, useEffect } from "react";
-import { useLocation } from "wouter"; // for redirection
+import { useLocation } from "wouter";
 import * as api from "../api";
-import { useEffect } from "react";
-
-// import your API
 
 interface User {
   id: number;
@@ -43,31 +40,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setLoading(false);
-    } else {
-      // if not in session storage, try to fetch user
-      const fetchUser = async () => {
-        try {
-          const res = await api.getCurrentUser();
- // calling your backend
-          if (res?.data) {
-            setUser(res.data);
-            sessionStorage.setItem("user", JSON.stringify(res.data));
-          } else {
-            console.error("No user data received.");
-          }
-        } catch (error) {
-          console.error("Error fetching user:", error);
-        } finally {
-          setLoading(false);
+    const fetchUser = async () => {
+      try {
+        const res = await api.getCurrentUser(); // checks if session is valid
+        if (res?.data) {
+          setUser(res.data);
+          sessionStorage.setItem("user", JSON.stringify(res.data));
+        } else {
+          setUser(null);
         }
-      };
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      fetchUser();
-    }
+    fetchUser(); // always try fetching fresh user from backend
   }, []);
 
   return (
