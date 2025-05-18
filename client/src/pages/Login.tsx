@@ -24,12 +24,14 @@
 
 
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // <-- Import navigate
+import { useState, useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
+import { useLocation } from "wouter";
 
 const LoginPage = () => {
   const [userId, setUserId] = useState("");
-  const navigate = useNavigate(); // <-- Initialize navigate
+  const { setUser } = useContext(AuthContext);
+  const [, setLocation] = useLocation();
 
   const handleLogin = async () => {
     if (!userId.trim()) {
@@ -46,9 +48,10 @@ const LoginPage = () => {
       const data = await res.json();
 
       if (data.user) {
-        console.log("Logged in:", data.user);
-        alert("Login successful!");
-        navigate("/dashboard"); // <-- Redirect after login
+        // ✅ Update context and sessionStorage
+        setUser(data.user);
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+        setLocation("/"); // ✅ redirect after login
       } else {
         alert(data.message || "Login failed");
       }
@@ -79,5 +82,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
 
