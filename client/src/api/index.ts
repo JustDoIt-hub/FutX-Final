@@ -109,10 +109,15 @@ import { API_URL } from '../config';
 import { apiRequest } from '@/lib/queryClient';
 
 // Authentication API
-export const telegramAuth = async (code: string) => {
-  const res = await apiRequest('POST', `${API_URL}/api/auth/telegram`, { code });
+export const login = async (userId: string) => {
+  const res = await fetch(`${API_URL}/api/auth/login?userId=${userId}`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Login failed');
   return res.json();
 };
+
 
 export const getCurrentUser = async () => {
   const res = await fetch(`${API_URL}/api/auth/me`, { credentials: 'include' });
