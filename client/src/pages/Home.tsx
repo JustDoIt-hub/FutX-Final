@@ -9,6 +9,8 @@ import { useEffect } from "react";
 const Home = () => {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+    if (!user) return null;
+
 
   return (
     <div className="container mx-auto px-4 py-8">
