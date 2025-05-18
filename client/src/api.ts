@@ -22,3 +22,15 @@ export async function logout() {
   });
   return res.json();
 }
+export async function getUserPlayers() {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/players`, {
+    credentials: 'include',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch user players');
+  }
+
+  return res.json(); // or res.json().players if your response is wrapped
+}
+
