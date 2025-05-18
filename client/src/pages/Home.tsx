@@ -9,7 +9,6 @@ import { useEffect } from "react";
 const Home = () => {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-    if (!user) return null;
 
 
   return (
