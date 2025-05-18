@@ -1,6 +1,6 @@
-import { createContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 import { useLocation } from "wouter";
-import * as api from "../api";
+import { login as apiLogin, logout as apiLogout } from "../api";
 
 interface User {
   id: number;
@@ -11,6 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  login: (userId: number) => Promise<void>;
   logout: () => void;
   setUser: (user: User) => void;
   loading: boolean;
@@ -19,6 +20,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
+  login: async () => {},
   logout: () => {},
   setUser: () => {},
   loading: true,
@@ -33,31 +35,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [, setLocation] = useLocation();
 
+  // ✅ Login function
+  const login = async (userId: number) => {
+    try {
+      const loggedInUser = await apiLogin(userId); // returns user
+      setUser(loggedInUser);
+      sessionStorage.setItem("user", JSON.stringify(loggedInUser));
+      setLocation("/");
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
+  };
+
   const logout = () => {
+    apiLogout().catch(console.error);
     setUser(null);
     sessionStorage.removeItem("user");
     setLocation("/login");
   };
 
+  // ✅ On mount, read from sessionStorage
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await api.getCurrentUser(); // checks if session is valid
-        if (res?.data) {
-          setUser(res.data);
-          sessionStorage.setItem("user", JSON.stringify(res.data));
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser(); // always try fetching fresh user from backend
+    const stored = sessionStorage.getItem("user");
+    if (stored) {
+      setUser(JSON.parse(stored));
+    }
+    setLoading(false);
   }, []);
 
   return (
@@ -65,6 +68,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       value={{
         user,
         isAuthenticated: !!user,
+        login,
         logout,
         setUser,
         loading,
