@@ -7,7 +7,7 @@ const LoginPage = () => {
   const { isAuthenticated, setUser } = useContext(AuthContext);
   const [, setLocation] = useLocation();
 
-  // ✅ If already authenticated, redirect to home
+  // ✅ Redirect to home if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       setLocation("/");
@@ -21,17 +21,19 @@ const LoginPage = () => {
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login?userId=${userId}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/auth/login?userId=${userId}`,
+        {
+          method: "GET",
+          credentials: "include", // ✅ allows session cookie to be stored
+        }
+      );
 
       const data = await res.json();
 
       if (data.user) {
-        setUser(data.user);
-        sessionStorage.setItem("user", JSON.stringify(data.user));
-        setLocation("/");
+        setUser(data.user); // ✅ sets user context
+        setLocation("/");   // ✅ redirects to home
       } else {
         alert(data.message || "Login failed");
       }
