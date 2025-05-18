@@ -25,9 +25,11 @@
 
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // <-- Import navigate
 
 const LoginPage = () => {
   const [userId, setUserId] = useState("");
+  const navigate = useNavigate(); // <-- Initialize navigate
 
   const handleLogin = async () => {
     if (!userId.trim()) {
@@ -44,9 +46,9 @@ const LoginPage = () => {
       const data = await res.json();
 
       if (data.user) {
-        // TODO: Save user in state or navigate
         console.log("Logged in:", data.user);
         alert("Login successful!");
+        navigate("/dashboard"); // <-- Redirect after login
       } else {
         alert(data.message || "Login failed");
       }
@@ -77,4 +79,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
 
