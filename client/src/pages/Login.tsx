@@ -1,66 +1,66 @@
-import { useState, useContext, useEffect } from "react";
-import { AuthContext } from "@/context/AuthContext";
-import { useLocation } from "wouter";
+// // import { useState, useContext, useEffect } from "react";
+// import { AuthContext } from "@/context/AuthContext";
+// import { useLocation } from "wouter";
 
-const LoginPage = () => {
-  const [userId, setUserId] = useState("");
-  const { isAuthenticated, setUser } = useContext(AuthContext);
-  const [, setLocation] = useLocation();
+// const LoginPage = () => {
+//   const [userId, setUserId] = useState("");
+//   const { isAuthenticated, setUser } = useContext(AuthContext);
+//   const [, setLocation] = useLocation();
 
-  // ✅ Redirect to home if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      setLocation("/");
-    }
-  }, [isAuthenticated]);
+//   // ✅ Redirect to home if already authenticated
+//   useEffect(() => {
+//     if (isAuthenticated) {
+//       setLocation("/");
+//     }
+//   }, [isAuthenticated]);
 
-  const handleLogin = async () => {
-    if (!userId.trim()) {
-      alert("Please enter a valid User ID");
-      return;
-    }
+//   const handleLogin = async () => {
+//     if (!userId.trim()) {
+//       alert("Please enter a valid User ID");
+//       return;
+//     }
 
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/auth/login?userId=${userId}`,
-        {
-          method: "GET",
-          credentials: "include", // ✅ allows session cookie to be stored
-        }
-      );
+//     try {
+//       const res = await fetch(
+//         `${import.meta.env.VITE_API_URL}/api/auth/login?userId=${userId}`,
+//         {
+//           method: "GET",
+//           credentials: "include", // ✅ allows session cookie to be stored
+//         }
+//       );
 
-      const data = await res.json();
+//       const data = await res.json();
 
-      if (data.user) {
-        setUser(data.user); // ✅ sets user context
-        setLocation("/");   // ✅ redirects to home
-      } else {
-        alert(data.message || "Login failed");
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("An error occurred during login");
-    }
-  };
+//       if (data.user) {
+//         setUser(data.user); // ✅ sets user context
+//         setLocation("/");   // ✅ redirects to home
+//       } else {
+//         alert(data.message || "Login failed");
+//       }
+//     } catch (err) {
+//       console.error("Login error:", err);
+//       alert("An error occurred during login");
+//     }
+//   };
 
-  return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white space-y-4">
-      <h1 className="text-2xl font-semibold">Login</h1>
-      <input
-        type="text"
-        placeholder="Enter your User ID"
-        value={userId}
-        onChange={(e) => setUserId(e.target.value)}
-        className="p-2 rounded text-black"
-      />
-      <button
-        onClick={handleLogin}
-        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
-      >
-        Login
-      </button>
-    </div>
-  );
-};
+//   return (
+//     <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white space-y-4">
+//       <h1 className="text-2xl font-semibold">Login</h1>
+//       <input
+//         type="text"
+//         placeholder="Enter your User ID"
+//         value={userId}
+//         onChange={(e) => setUserId(e.target.value)}
+//         className="p-2 rounded text-black"
+//       />
+//       <button
+//         onClick={handleLogin}
+//         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
+//       >
+//         Login
+//       </button>
+//     </div>
+//   );
+// };
 
-export default LoginPage;
+// export default LoginPage;
