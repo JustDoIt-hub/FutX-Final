@@ -1,13 +1,13 @@
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
+// import { useAuth } from "@/hooks/useAuth";
 import { FaFutbol, FaGamepad, FaFootballBall, FaTrophy } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 
 
 const Home = () => {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const [, setLocation] = useLocation();
 
 
