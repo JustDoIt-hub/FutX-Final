@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "https://futx-api-url.com"; // update as needed
+const BASE_URL = import.meta.env.VITE_API_URL || "futxapi-production.up.railway.app"; // update as needed
 
 // export async function getCurrentUser() {
 //   const res = await fetch(`${BASE_URL}/api/auth/me`, {
