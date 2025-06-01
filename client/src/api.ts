@@ -23,7 +23,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "futxapi-production.up.railway.
 //   return res.json();
 // }
 export async function getUserPlayers() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/players`, {
+  const res = await fetch(`${BASE_URL}/api/players`, {
     credentials: 'include',
   });
 
@@ -31,6 +31,5 @@ export async function getUserPlayers() {
     throw new Error('Failed to fetch user players');
   }
 
-  return res.json(); // or res.json().players if your response is wrapped
+  return res.json();
 }
-
