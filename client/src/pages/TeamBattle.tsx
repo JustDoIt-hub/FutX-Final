@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
+// import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { useSpin } from "@/hooks/useSpin";
 import { useTeamBattle } from "@/hooks/useTeamBattle";
